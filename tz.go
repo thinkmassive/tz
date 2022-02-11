@@ -118,47 +118,50 @@ func main() {
 	nope := color.New(color.BgRed)
 	info := color.New(color.FgRed)
 
-	// set time
-	n := time.Now().UTC()
+  for true {
+		// set time
+		n := time.Now().UTC()
 
-	// output
-	fmt.Printf("\n")
-	for _, z := range zones {
-		offset, match := findOffset(z.TZ)
-		if match {
-			if z.Highlight {
-				info.Printf(" %s%s ", strings.Repeat(" ", name-len(z.Name)), z.Name)
+		// output
+		fmt.Printf("\n")
+		for _, z := range zones {
+			offset, match := findOffset(z.TZ)
+			if match {
+				if z.Highlight {
+					info.Printf(" %s%s ", strings.Repeat(" ", name-len(z.Name)), z.Name)
+				} else {
+					fmt.Printf(" %s%s ", strings.Repeat(" ", name-len(z.Name)), z.Name)
+				}
+				for i := -half + 1; i <= half; i++ {
+					t := n.Add(time.Second * time.Duration((i*3600)+offset))
+					if i == 0 {
+						if date {
+							now.Printf(" %s - %s ", t.Format(joda.Format("MM/dd")), t.Format(joda.Format(format)))
+						} else {
+							now.Printf(" %s ", t.Format(joda.Format(format)))
+						}
+					} else if t.Hour() >= z.Start && t.Hour() <= z.End {
+						active.Printf(" %s ", t.Format(joda.Format(format)))
+					} else {
+						inactive.Printf(" %s ", t.Format(joda.Format(format)))
+					}
+					if ! compact {
+						fmt.Printf(" ")
+					}
+				}
 			} else {
 				fmt.Printf(" %s%s ", strings.Repeat(" ", name-len(z.Name)), z.Name)
+				nope.Printf(" Cannot find timezone: %s ", z.TZ)
 			}
-			for i := -half + 1; i <= half; i++ {
-				t := n.Add(time.Second * time.Duration((i*3600)+offset))
-				if i == 0 {
-					if date {
-						now.Printf(" %s - %s ", t.Format(joda.Format("MM/dd")), t.Format(joda.Format(format)))
-					} else {
-						now.Printf(" %s ", t.Format(joda.Format(format)))
-					}
-				} else if t.Hour() >= z.Start && t.Hour() <= z.End {
-					active.Printf(" %s ", t.Format(joda.Format(format)))
-				} else {
-					inactive.Printf(" %s ", t.Format(joda.Format(format)))
-				}
-				if ! compact {
-					fmt.Printf(" ")
-				}
+			if ! compact {
+				fmt.Printf("\n\n")
+			} else {
+				fmt.Printf("\n")
 			}
-		} else {
-			fmt.Printf(" %s%s ", strings.Repeat(" ", name-len(z.Name)), z.Name)
-			nope.Printf(" Cannot find timezone: %s ", z.TZ)
 		}
-		if ! compact {
-			fmt.Printf("\n\n")
-		} else {
-			fmt.Printf("\n")
-		}
+    time.Sleep(30 * time.Second)
+    fmt.Print("\033[H\033[2J")
 	}
-
 }
 
 func splitInput(input string) (z Zone) {
