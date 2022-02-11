@@ -109,6 +109,7 @@ func main() {
 	remWidth := int(width) - (name + 2)
 	full := (remWidth - (remWidth % block)) / block
 	half := (full - (full % 2)) / 2
+	compact := true;
 
 	// colors
 	inactive := color.New(color.BgWhite).Add(color.FgBlack)
@@ -143,13 +144,19 @@ func main() {
 				} else {
 					inactive.Printf(" %s ", t.Format(joda.Format(format)))
 				}
-				fmt.Printf(" ")
+				if ! compact {
+					fmt.Printf(" ")
+				}
 			}
 		} else {
 			fmt.Printf(" %s%s ", strings.Repeat(" ", name-len(z.Name)), z.Name)
 			nope.Printf(" Cannot find timezone: %s ", z.TZ)
 		}
-		fmt.Printf("\n\n")
+		if ! compact {
+			fmt.Printf("\n\n")
+		} else {
+			fmt.Printf("\n")
+		}
 	}
 
 }
